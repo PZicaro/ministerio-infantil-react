@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getRequest, patchRequest } from "../../../services/apiService";
 
 const EditResponsavel: React.FC = () => {
   const { cpf } = useParams<{ cpf: string }>();
+  const navigate = useNavigate(); // Corrigido para usar navigate diretamente
   const [responsavel, setResponsavel] = useState<any>(null);
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchResponsavel = async () => {
@@ -19,6 +22,9 @@ const EditResponsavel: React.FC = () => {
         setEmail(data.email);
       } catch (error) {
         console.error("Erro ao buscar responsável", error);
+        setError("Erro ao carregar dados do responsável.");
+      } finally {
+        setLoading(false);
       }
     };
     fetchResponsavel();
@@ -30,11 +36,15 @@ const EditResponsavel: React.FC = () => {
 
     try {
       await patchRequest(`/responsavel/${cpf}`, updatedData);
-      window.location.href = "/responsaveis";
+      navigate("/responsaveis"); 
     } catch (error) {
       console.error("Erro ao atualizar responsável", error);
+      setError("Erro ao atualizar os dados.");
     }
   };
+
+  if (loading) return <p>Carregando...</p>;
+  if (error) return <p>{error}</p>;
 
   return responsavel ? (
     <div>
@@ -62,7 +72,7 @@ const EditResponsavel: React.FC = () => {
       </form>
     </div>
   ) : (
-    <p>Carregando...</p>
+    <p>Responsável não encontrado.</p>
   );
 };
 

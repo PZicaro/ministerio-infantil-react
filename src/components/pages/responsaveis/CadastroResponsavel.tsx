@@ -5,14 +5,20 @@ const CadastroResponsavel: React.FC = () => {
   const [nome, setNome] = useState('');
   const [telefone, setTelefone] = useState('');
   const [email, setEmail] = useState('');
+  const [cpf, setCpf] = useState(''); 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const novoResponsavel = { nome, telefone, email };
+    const novoResponsavel = { nome, telefone, email, cpf }
     
     try {
       await postRequest('/responsavel/cadastrar', novoResponsavel);
-      window.location.href = '/responsaveis';
+      setNome('');
+      setTelefone('');
+      setEmail('');
+      setCpf('');
+      window.location.href = '/responsaveis'; 
+     console.log('FOOOOOOOOI')
     } catch (error) {
       console.error('Erro ao cadastrar responsável', error);
     }
@@ -39,6 +45,12 @@ const CadastroResponsavel: React.FC = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="E-mail"
+        />
+        <input
+          type="text"
+          value={cpf}
+          onChange={(e) => setCpf(e.target.value)}
+          placeholder="CPF"
         />
         <button type="submit">Cadastrar</button>
       </form>
